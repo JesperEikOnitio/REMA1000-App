@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Redirecting to REMA 1000 App...</title>
+    <meta charset="utf-8">
+    <title>Henter REMA 1000-appen...</title>
     <script type="text/javascript">
         window.onload = function() {
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // 1. Check for iOS (iPhone, iPad, iPod)
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
                 window.location.href = "https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb";
-            } else if (/android/i.test(userAgent)) {
+            } 
+            // 2. Check for Android
+            else if (/android/i.test(userAgent)) {
                 window.location.href = "https://play.google.com/store/apps/details?id=no.rema.bella&hl=no";
-            } else {
+            } 
+            // 3. Fallback for Desktop (PC/Mac)
+            else {
                 window.location.href = "https://www.rema.no"; 
             }
         };
     </script>
 </head>
 <body>
-    <p>Redirecting... If nothing happens, <a href="https://www.rema.no">click here</a>.</p>
+    <p style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+        Sender deg til app-butikken... <br>
+        Hvis ingenting skjer, <a href="https://www.rema.no">klikk her</a>.
+    </p>
 </body>
 </html>
