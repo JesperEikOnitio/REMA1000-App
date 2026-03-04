@@ -1,0 +1,4 @@
+name = "rema1000-qr-redirect"
+main = "src/worker.js"
+compatibility_date = "2026-03-04"
+workers_dev = true
