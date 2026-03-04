@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to REMA 1000 App...</title>
+    <script type="text/javascript">
+        window.onload = function() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                window.location.href = "https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb";
+            } else if (/android/i.test(userAgent)) {
+                window.location.href = "https://play.google.com/store/apps/details?id=no.rema.bella&hl=no";
+            } else {
+                window.location.href = "https://www.rema.no"; 
+            }
+        };
+    </script>
+</head>
+<body>
+    <p>Redirecting... If nothing happens, <a href="https://www.rema.no">click here</a>.</p>
+</body>
+</html>
