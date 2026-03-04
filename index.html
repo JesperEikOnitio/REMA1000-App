@@ -4,6 +4,103 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Åpner REMA 1000-appen...</title>
+    <style>
+        :root {
+            --rema-blue: #0057b8;
+            --rema-blue-dark: #003f8a;
+            --rema-blue-light: #e8f1ff;
+            --text-dark: #0f1f3d;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(165deg, var(--rema-blue) 0%, var(--rema-blue-dark) 100%);
+            color: var(--text-dark);
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .brand {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--rema-blue);
+            color: var(--white);
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+
+        .lead {
+            margin: 6px 0 14px;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .primary-link {
+            display: inline-block;
+            text-decoration: none;
+            background: var(--rema-blue);
+            color: var(--white);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-top: 4px;
+            margin-bottom: 14px;
+        }
+
+        .helper {
+            margin: 10px 0;
+            color: #1a3768;
+        }
+
+        .links {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            background: var(--rema-blue-light);
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--rema-blue-dark);
+            font-weight: 600;
+        }
+
+        .links a {
+            text-decoration: none;
+            margin: 0 6px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 420px) {
+            .card {
+                padding: 20px 16px;
+            }
+
+            .primary-link {
+                width: 100%;
+            }
+        }
+    </style>
     <noscript>
         <meta http-equiv="refresh" content="0;url=https://www.rema.no">
     </noscript>
@@ -46,11 +143,28 @@
                 return WEBSITE_URL;
             }
 
-            function redirect() {
-                window.location.replace(getRedirectTarget());
+            function getPlatform() {
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                if (isIOS(userAgent)) {
+                    return "ios";
+                }
+
+                if (/android/i.test(userAgent)) {
+                    return "android";
+                }
+
+                return "desktop";
+            }
+
+            function setStatusText(message) {
+                var statusText = document.getElementById("status-text");
+                if (statusText) {
+                    statusText.textContent = message;
+                }
             }
 
             function setupFallbackLinks() {
+                var targetUrl = getRedirectTarget();
                 var appStoreLink = document.getElementById("app-store-link");
                 var playStoreLink = document.getElementById("play-store-link");
                 var websiteLink = document.getElementById("website-link");
@@ -69,34 +183,76 @@
                 }
 
                 if (mainLink) {
-                    mainLink.href = getRedirectTarget();
+                    mainLink.href = targetUrl;
+                }
+
+                var openNowLink = document.getElementById("open-now-link");
+                if (openNowLink) {
+                    openNowLink.href = targetUrl;
                 }
             }
 
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", function () {
-                    setupFallbackLinks();
-                    redirect();
-                });
-            } else {
+            function showManualMode() {
+                var manualBox = document.getElementById("manual-mode");
+                if (manualBox) {
+                    manualBox.style.display = "block";
+                }
+            }
+
+            function updatePrimaryButton() {
+                var platform = getPlatform();
+                var status = "Trykk på knappen under for å åpne riktig side.";
+                var buttonLabel = "Åpne nå";
+
+                if (platform === "ios") {
+                    status = "Trykk på knappen under for å åpne App Store.";
+                    buttonLabel = "Åpne i App Store";
+                } else if (platform === "android") {
+                    status = "Trykk på knappen under for å åpne Google Play.";
+                    buttonLabel = "Åpne i Google Play";
+                } else {
+                    status = "Trykk på knappen under for å gå til rema.no.";
+                    buttonLabel = "Gå til rema.no";
+                }
+
+                setStatusText(status);
+
+                var openNowLink = document.getElementById("open-now-link");
+                if (openNowLink) {
+                    openNowLink.textContent = buttonLabel;
+                }
+            }
+
+            function init() {
                 setupFallbackLinks();
-                redirect();
+                updatePrimaryButton();
+                showManualMode();
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", init);
+            } else {
+                init();
             }
         })();
     </script>
 </head>
 <body>
-    <main style="font-family: sans-serif; text-align: center; margin: 50px auto; max-width: 520px; padding: 0 16px;">
-        <p>
+    <main class="card">
+        <div class="brand">REMA 1000</div>
+        <p id="status-text" class="lead">
             Sender deg til riktig app-butikk...
         </p>
-        <p>
+        <p id="manual-mode" style="display: none; margin: 0;">
+            <a id="open-now-link" class="primary-link" href="https://www.rema.no">Åpne app-butikk nå</a>
+        </p>
+        <p class="helper">
             Hvis ingenting skjer, <a id="main-link" href="https://www.rema.no">trykk her</a>.
         </p>
-        <p>
+        <p class="helper" style="margin-bottom: 8px;">
             Eller velg butikk manuelt:
         </p>
-        <p>
+        <p class="links">
             <a id="app-store-link" href="https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb">App Store</a>
             |
             <a id="play-store-link" href="https://play.google.com/store/apps/details?id=no.rema.bella&hl=no">Google Play</a>
