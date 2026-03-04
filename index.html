@@ -2,30 +2,107 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Henter REMA 1000-appen...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Åpner REMA 1000-appen...</title>
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=https://www.rema.no">
+    </noscript>
     <script type="text/javascript">
-        window.onload = function() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        (function () {
+            var APPLE_STORE_BASE_URL = "https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb";
+            var PLAY_STORE_BASE_URL = "https://play.google.com/store/apps/details?id=no.rema.bella&hl=no";
+            var WEBSITE_BASE_URL = "https://www.rema.no";
 
-            // 1. Check for iOS (iPhone, iPad, iPod)
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                window.location.href = "https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb";
-            } 
-            // 2. Check for Android
-            else if (/android/i.test(userAgent)) {
-                window.location.href = "https://play.google.com/store/apps/details?id=no.rema.bella&hl=no";
-            } 
-            // 3. Fallback for Desktop (PC/Mac)
-            else {
-                window.location.href = "https://www.rema.no"; 
+            function withTracking(baseUrl, platform) {
+                var url = new URL(baseUrl);
+                url.searchParams.set("utm_source", "qr");
+                url.searchParams.set("utm_medium", "offline");
+                url.searchParams.set("utm_campaign", "rema1000_app_download");
+                url.searchParams.set("utm_content", platform);
+                return url.toString();
             }
-        };
+
+            var APPLE_STORE_URL = withTracking(APPLE_STORE_BASE_URL, "ios");
+            var PLAY_STORE_URL = withTracking(PLAY_STORE_BASE_URL, "android");
+            var WEBSITE_URL = withTracking(WEBSITE_BASE_URL, "desktop");
+
+            function isIOS(userAgent) {
+                var iOSDevice = /iPad|iPhone|iPod/.test(userAgent);
+                var iPadOS13Plus = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+                return (iOSDevice || iPadOS13Plus) && !window.MSStream;
+            }
+
+            function getRedirectTarget() {
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                if (isIOS(userAgent)) {
+                    return APPLE_STORE_URL;
+                }
+
+                if (/android/i.test(userAgent)) {
+                    return PLAY_STORE_URL;
+                }
+
+                return WEBSITE_URL;
+            }
+
+            function redirect() {
+                window.location.replace(getRedirectTarget());
+            }
+
+            function setupFallbackLinks() {
+                var appStoreLink = document.getElementById("app-store-link");
+                var playStoreLink = document.getElementById("play-store-link");
+                var websiteLink = document.getElementById("website-link");
+                var mainLink = document.getElementById("main-link");
+
+                if (appStoreLink) {
+                    appStoreLink.href = APPLE_STORE_URL;
+                }
+
+                if (playStoreLink) {
+                    playStoreLink.href = PLAY_STORE_URL;
+                }
+
+                if (websiteLink) {
+                    websiteLink.href = WEBSITE_URL;
+                }
+
+                if (mainLink) {
+                    mainLink.href = getRedirectTarget();
+                }
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", function () {
+                    setupFallbackLinks();
+                    redirect();
+                });
+            } else {
+                setupFallbackLinks();
+                redirect();
+            }
+        })();
     </script>
 </head>
 <body>
-    <p style="font-family: sans-serif; text-align: center; margin-top: 50px;">
-        Sender deg til app-butikken... <br>
-        Hvis ingenting skjer, <a href="https://www.rema.no">klikk her</a>.
-    </p>
+    <main style="font-family: sans-serif; text-align: center; margin: 50px auto; max-width: 520px; padding: 0 16px;">
+        <p>
+            Sender deg til riktig app-butikk...
+        </p>
+        <p>
+            Hvis ingenting skjer, <a id="main-link" href="https://www.rema.no">trykk her</a>.
+        </p>
+        <p>
+            Eller velg butikk manuelt:
+        </p>
+        <p>
+            <a id="app-store-link" href="https://apps.apple.com/no/app/rema-1000/id1184277401?l=nb">App Store</a>
+            |
+            <a id="play-store-link" href="https://play.google.com/store/apps/details?id=no.rema.bella&hl=no">Google Play</a>
+            |
+            <a id="website-link" href="https://www.rema.no">rema.no</a>
+        </p>
+    </main>
 </body>
 </html>
